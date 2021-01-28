@@ -16,3 +16,7 @@ Will probably never be finished... pull requests appreciated
 4. Stuck or crash if video length is long
 
 Slowness of music loading can be explained by the fact that the whole video is downloaded to memory instead of playing it directly. Help me. I don't know any better. Do a pull request and remove this message on it if you fix this.
+
+# Images
+
+<img src="https://i.antti.codes/epFgTkKj.png" width="768px">
