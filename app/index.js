@@ -262,7 +262,6 @@ searchField.onkeydown = async e => {
             return;
         }
         let songs = await search(searchField.value);
-        console.log(songs);
         list.innerHTML = "";
         songs.forEach(async s => {
             let title = s.title.slice(0,70);
@@ -278,7 +277,7 @@ searchField.onkeydown = async e => {
         list.scrollTop = 0;
     }, 500);
 
-    if(e.keyCode == 13) {
+    if(e.code == "Enter") {
         clearTimeout(searchTimeout);
         if(searchField.value == "") {
             list.innerHTML = "";
@@ -289,8 +288,8 @@ searchField.onkeydown = async e => {
         songs.forEach(async s => {
             let title = s.title.slice(0,70);
             let div = `
-            <div class="videoContainer" onclick="addToQueue('${s.link}')">
-                <img class="videoThumbnail" src="${s.thumbnail}">
+            <div class="videoContainer" onclick="addToQueue('${s.url}')">
+                <img class="videoThumbnail" src="${s.thumbnails[0].url}">
                 <p class="videoTitle">${title != s.title ? title + "..." : title}</p>
                 <p class="videoAuthor">- ${s.author.name}</p>
             </div>
