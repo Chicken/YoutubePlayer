@@ -1,83 +1,83 @@
+/* global document, Audio, window  */
 const ytsr = require("ytsr");
 const ytdl = require("ytdl-core");
-const { Base64Encode } = require('base64-stream');
-const { remote } = require('electron');
+const { Base64Encode } = require("base64-stream");
+const { remote } = require("electron");
 const win = remote.getCurrentWindow();
 const audio = new Audio();
 
 const cover = document.getElementById("currentCover"),
-      title = document.getElementById("currentTitle"),
-      artist = document.getElementById("currentArtist"),
-      back = document.getElementById("back"),
-      pause = document.getElementById("pause"),
-      pauseIcon = document.getElementById("pauseIcon"),
-      forward = document.getElementById("forward"),
-      timeline = document.getElementById("timeline"),
-      mute = document.getElementById("mute"),
-      muteIcon = document.getElementById("muteIcon"),
-      volume = document.getElementById("volume"),
-      list = document.getElementById("list"),
-      stop = document.getElementById("stop"),
-      loop = document.getElementById("loop"),
-      searchField = document.getElementById("search");
+    title = document.getElementById("currentTitle"),
+    artist = document.getElementById("currentArtist"),
+    back = document.getElementById("back"),
+    pause = document.getElementById("pause"),
+    pauseIcon = document.getElementById("pauseIcon"),
+    forward = document.getElementById("forward"),
+    timeline = document.getElementById("timeline"),
+    mute = document.getElementById("mute"),
+    muteIcon = document.getElementById("muteIcon"),
+    volume = document.getElementById("volume"),
+    list = document.getElementById("list"),
+    stop = document.getElementById("stop"),
+    loop = document.getElementById("loop"),
+    searchField = document.getElementById("search");
 
 window.onbeforeunload = async () => {
     win.removeAllListeners();
-}
+};
 
-document.getElementById('min-button').addEventListener("click", async () => {
+document.getElementById("min-button").addEventListener("click", async () => {
     win.minimize();
 });
 
-document.getElementById('max-button').addEventListener("click", async () => {
+document.getElementById("max-button").addEventListener("click", async () => {
     win.maximize();
 });
 
-document.getElementById('restore-button').addEventListener("click", async () => {
+document.getElementById("restore-button").addEventListener("click", async () => {
     win.unmaximize();
 });
 
-document.getElementById('close-button').addEventListener("click", async () => {
+document.getElementById("close-button").addEventListener("click", async () => {
     win.destroy();
 });
 
 let toggleMaxRestoreButtons = async () => {
     if (win.isMaximized()) {
-        document.body.classList.add('maximized');
+        document.body.classList.add("maximized");
     } else {
-        document.body.classList.remove('maximized');
+        document.body.classList.remove("maximized");
     }
-}
+};
 
 toggleMaxRestoreButtons();
-win.on('maximize', toggleMaxRestoreButtons);
-win.on('unmaximize', toggleMaxRestoreButtons);
+win.on("maximize", toggleMaxRestoreButtons);
+win.on("unmaximize", toggleMaxRestoreButtons);
 
 let current = null;
 
 let setCurrent = async (otitle, author, img) => {
-    etitle = otitle.slice(0, 60)
+    let etitle = otitle.slice(0, 60);
     cover.src = img;
     title.innerHTML = etitle != otitle ? etitle + "..." : etitle;
     artist.innerHTML = author;
-}
+};
 
 let search = async (name) => {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
         try {
             let filters = await ytsr.getFilters(name);
-            filter = filters.get('Type').find(o => o.name === 'Video');
+            let filter = filters.get("Type").get("Video");
             resolve((await ytsr(name, {
                 limit: 20,
                 nextpageRef: filter.ref
-            })).items.filter(s => {
-                return !s.live;
-            }));
+            })).items.filter(s => s.type === "video"));
         } catch(e) {
             reject(e);
         }
-    })
-}
+    });
+};
 
 
 let play = async song => {
@@ -90,34 +90,35 @@ let play = async song => {
     audio.src = "data:audio/mpeg;base64," + song;
     setTime(0);
     audio.play();
-}
+};
 
 let setTime = async time => {
     audio.currentTime = time;
-}
+};
 
 let loadSong = async url => {
     return new Promise((resolve, reject) => {
         try {
             let stream = new Base64Encode();
             let cache = "";
+            console.log(url);
             ytdl(url, {
-                filter: format => format.container === 'mp4'
+                filter: format => format.container === "mp4"
             }).pipe(stream);
             stream.on("data", async (data) => {
                 cache = cache + data.toString();
-            })
+            });
             stream.on("end", async () => {
                 resolve({
                     data: cache,
                     info: await ytdl.getBasicInfo(url)
                 });
-            })
+            });
         } catch(e) {
             reject(e);
         }
-    })
-}
+    });
+};
 
 let loopStatus = false;
 
@@ -130,7 +131,7 @@ loop.onclick = async () => {
         loop.style.color = "#cccccc";
         loop.classList.remove("selected");
     }
-}
+};
 
 let pauseState = true;
 
@@ -146,15 +147,15 @@ pause.onclick = async () => {
         pauseIcon.classList.remove("glyphicon-pause");
         pauseIcon.classList.add("glyphicon-play");
     }
-}
+};
 
 audio.ontimeupdate = async () => {
     timeline.value = audio.currentTime.toFixed(0);
-}
+};
 
 timeline.onchange = async () => {
     setTime(timeline.value);
-}
+};
 
 let muteState = null;
 
@@ -176,7 +177,7 @@ mute.onclick = async () => {
         volume.value = muteState * 100;
         muteState = null;
     }
-}
+};
 
 volume.oninput = async () => {
     if(volume.value == 0) {
@@ -193,7 +194,7 @@ volume.oninput = async () => {
         muteIcon.style.color = "#cccccc";
     }
     audio.volume = volume.value/100;
-}
+};
 
 let queue = [];
 
@@ -206,7 +207,7 @@ let nextSong = async () => {
         current = queue.shift() || null;
     }
     if(queue.length == 0 && current == null) {
-        setCurrent("", "", "")
+        setCurrent("", "", "");
         current = null;
         loop.disabled = true;
         stop.disabled = true;
@@ -215,7 +216,7 @@ let nextSong = async () => {
         back.disabled = true;
         forward.disabled = true;
         timeline.disabled = true;
-        audio.pause()
+        audio.pause();
         audio.src = "";
         pauseIcon.classList.remove("glyphicon-pause");
         pauseIcon.classList.add("glyphicon-play");
@@ -226,10 +227,11 @@ let nextSong = async () => {
     setCurrent(song.info.videoDetails.title, song.info.videoDetails.author.name, song.info.videoDetails.author.avatar);
     timeline.max = song.info.videoDetails.lengthSeconds;
     play(song.data);
-}
+};
 
 audio.onended = nextSong;
 
+// eslint-disable-next-line no-unused-vars
 let addToQueue = async url => {
     queue.push(url);
     if(queue.length == 1 && current == null) {
@@ -242,11 +244,11 @@ let addToQueue = async url => {
         pauseState = false;
         play(song.data);
     }
-}
+};
 
 back.onclick = async () => {
     setTime(0);
-}
+};
 
 forward.onclick = nextSong;
 
@@ -260,20 +262,21 @@ searchField.onkeydown = async e => {
             return;
         }
         let songs = await search(searchField.value);
+        console.log(songs);
         list.innerHTML = "";
         songs.forEach(async s => {
             let title = s.title.slice(0,70);
             let div = `
-            <div class="videoContainer" onclick="addToQueue('${s.link}')">
-                <img class="videoThumbnail" src="${s.thumbnail}">
+            <div class="videoContainer" onclick="addToQueue('${s.url}')">
+                <img class="videoThumbnail" src="${s.thumbnails[0].url}">
                 <p class="videoTitle">${title != s.title ? title + "..." : title}</p>
                 <p class="videoAuthor">- ${s.author.name}</p>
             </div>
             `;
             list.innerHTML += "\n" + div;
-        })
+        });
         list.scrollTop = 0;
-    }, 500)
+    }, 500);
 
     if(e.keyCode == 13) {
         clearTimeout(searchTimeout);
@@ -293,13 +296,13 @@ searchField.onkeydown = async e => {
             </div>
             `;
             list.innerHTML += "\n" + div;
-        })
+        });
         list.scrollTop = 0;
     }
-}
+};
 
 stop.onclick = async () => {
-    setCurrent("", "", "")
+    setCurrent("", "", "");
     current = null;
     queue = [];
     loop.disabled = true;
@@ -309,8 +312,8 @@ stop.onclick = async () => {
     back.disabled = true;
     forward.disabled = true;
     timeline.disabled = true;
-    audio.pause()
+    audio.pause();
     audio.src = "";
     pauseIcon.classList.remove("glyphicon-pause");
     pauseIcon.classList.add("glyphicon-play");
-}
+};

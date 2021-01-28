@@ -6,14 +6,14 @@ let createWindow = async () => {
         height: 720,
         minWidth: 1080,
         minHeight: 720,
-        backgroundColor: '#333333',
+        backgroundColor: "#333333",
         frame: false,
         webPreferences: {
             enableRemoteModule: true,
             nodeIntegration: true
         }
-    })
+    });
     window.loadFile("./app/index.html");
-}
+};
 
 app.whenReady().then(createWindow);
