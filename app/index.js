@@ -1,9 +1,9 @@
-/* global document, Audio, window  */
+/* global document, Audio */
 const ytsr = require("ytsr");
 const ytdl = require("ytdl-core");
 const { Base64Encode } = require("base64-stream");
-const { remote } = require("electron");
-const win = remote.getCurrentWindow();
+//const { remote } = require("electron");
+//const win = remote.getCurrentWindow();
 const audio = new Audio();
 
 const cover = document.getElementById("currentCover"),
@@ -22,37 +22,37 @@ const cover = document.getElementById("currentCover"),
     loop = document.getElementById("loop"),
     searchField = document.getElementById("search");
 
-window.onbeforeunload = async () => {
-    win.removeAllListeners();
-};
+// window.onbeforeunload = async () => {
+//     win.removeAllListeners();
+// };
 
-document.getElementById("min-button").addEventListener("click", async () => {
-    win.minimize();
-});
+// document.getElementById("min-button").addEventListener("click", async () => {
+//     win.minimize();
+// });
 
-document.getElementById("max-button").addEventListener("click", async () => {
-    win.maximize();
-});
+// document.getElementById("max-button").addEventListener("click", async () => {
+//     win.maximize();
+// });
 
-document.getElementById("restore-button").addEventListener("click", async () => {
-    win.unmaximize();
-});
+// document.getElementById("restore-button").addEventListener("click", async () => {
+//     win.unmaximize();
+// });
 
-document.getElementById("close-button").addEventListener("click", async () => {
-    win.destroy();
-});
+// document.getElementById("close-button").addEventListener("click", async () => {
+//     win.destroy();
+// });
 
-let toggleMaxRestoreButtons = async () => {
-    if (win.isMaximized()) {
-        document.body.classList.add("maximized");
-    } else {
-        document.body.classList.remove("maximized");
-    }
-};
+// let toggleMaxRestoreButtons = async () => {
+//     if (win.isMaximized()) {
+//         document.body.classList.add("maximized");
+//     } else {
+//         document.body.classList.remove("maximized");
+//     }
+// };
 
-toggleMaxRestoreButtons();
-win.on("maximize", toggleMaxRestoreButtons);
-win.on("unmaximize", toggleMaxRestoreButtons);
+// toggleMaxRestoreButtons();
+// win.on("maximize", toggleMaxRestoreButtons);
+// win.on("unmaximize", toggleMaxRestoreButtons);
 
 let current = null;
 
@@ -64,19 +64,17 @@ let setCurrent = async (otitle, author, img) => {
 };
 
 let search = async (name) => {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-        try {
-            let filters = await ytsr.getFilters(name);
-            let filter = filters.get("Type").get("Video");
-            resolve((await ytsr(name, {
-                limit: 20,
-                nextpageRef: filter.ref
-            })).items.filter(s => s.type === "video"));
-        } catch(e) {
-            reject(e);
-        }
-    });
+    try {
+        let filters = await ytsr.getFilters(name);
+        let filter = filters.get("Type").get("Video");
+        return (await ytsr(name, {
+            limit: 20,
+            nextpageRef: filter.ref
+        })).items.filter(s => s.type === "video");
+    } catch (e) {
+        console.error();
+        return [];
+    }
 };
 
 
@@ -101,7 +99,6 @@ let loadSong = async url => {
         try {
             let stream = new Base64Encode();
             let cache = "";
-            console.log(url);
             ytdl(url, {
                 filter: format => format.container === "mp4"
             }).pipe(stream);

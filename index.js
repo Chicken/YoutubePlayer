@@ -9,7 +9,7 @@ let createWindow = async () => {
         backgroundColor: "#333333",
         frame: false,
         webPreferences: {
-            enableRemoteModule: true,
+            contextIsolation: false,
             nodeIntegration: true
         }
     });
