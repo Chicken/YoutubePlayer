@@ -11,7 +11,7 @@
   "dependencies": {
     "base64-stream": "^1.0.0",
     "ytdl-core": "^4.5.0",
-    "ytsr": "^3.4.0"
+    "ytsr": "^3.4.1"
   },
   "devDependencies": {
     "electron": "^12.0.2",
