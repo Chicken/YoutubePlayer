@@ -10,8 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "base64-stream": "^1.0.0",
-    "ytdl-core": "^4.9.1",
-    "ytsr": "^3.5.0"
+    "ytsr": "^3.5.3",
+    "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
     "electron-packager": "^15.3.0",
