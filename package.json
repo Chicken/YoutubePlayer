@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "base64-stream": "^1.0.0",
-    "ytdl-core": "^4.9.1",
+    "ytdl-core": "^4.10.0",
     "ytsr": "^3.5.3"
   },
   "devDependencies": {
