@@ -14,7 +14,7 @@
     "ytsr": "^3.5.3"
   },
   "devDependencies": {
-    "electron": "^16.0.2",
+    "electron": "^18.0.1",
     "electron-packager": "^15.3.0"
   }
 }
